@@ -1,0 +1,174 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<title>Photoshop</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+body, h1,h2,h3,h4,h5,h6 {font-family: "Montserrat", sans-serif}
+.w3-row-padding img {margin-bottom: 12px}
+/* Set the width of the sidebar to 120px */
+.w3-sidebar {width: 120px;background: #222;}
+/* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
+#main {margin-left: 120px}
+/* Remove margins from "page content" on small screens */
+@media only screen and (max-width: 600px) {#main {margin-left: 0}}
+.w3-padding-small {
+    padding: 8px 19px!important;
+}
+.w3-padding-64 {
+    padding-top: 5px!important;
+    padding-bottom: 64px!important;
+}
+.w3-sidebar {
+    width: 118px;
+    background: #222;
+}
+.w3-padding-64 {
+    padding-top: 5px!important;
+    padding-bottom: 0px!important;
+}
+p {
+    color: white;
+}
+</style>
+<body class="w3-black">
+
+<!-- Icon Bar (Sidebar - hidden on small screens) -->
+<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+  <!-- Avatar image in top left corner -->
+
+  <img src= "{% static 'webapp/images/logo.png' %}" style="width:100%"   >
+  <a href="#flip" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input alt="Flip" height="40" src="{% static 'webapp/images/flip.png' %}" style="width:65%" type="image" width="30" onclick="GetManipulated_Image('flip')">
+  </a>
+  {% if img_obj %}
+  <a href="#rotate" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input  type="image" src="{% static 'webapp/images/rotate.png' %}" style="width:63%" onclick="GetManipulated_Image('rotate')" alt="rotate" height="40" width="30" >
+  </a>
+  {% endif %}
+  <a href="#grayscale" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input type="image" src="{% static 'webapp/images/grayscale.jpg' %}" style="width:63%"  alt="Grayscale" onclick="GetManipulated_Image('grayscale')" height="40" width="30" >
+  </a>
+  <a href="#crop" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input type="image" src="{% static 'webapp/images/resize.png' %}" style="width:63%"  alt="Resize" height="40" width="30" onclick="GetManipulated_Image('crop')" >
+  </a>
+  <a href="#thumbnail" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input type="image" src="{% static 'webapp/images/thumbnail.png' %}" style="width:63%"  alt="Thumbnail" height="40" width="30" onclick="GetManipulated_Image('thumbnail')"  >
+  </a>
+  <a href="#rotate_left" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input type="image" src="{% static 'webapp/images/rotate-left.png' %}" style="width:63%"  alt="Rotate-left" height="40" width="30" onclick="GetManipulated_Image('rotateleft')"  >
+  </a>
+  <a href="#rotate_right" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input type="image" src="{% static 'webapp/images/rotate-right.png' %}" style="width:65%"  alt="Rotate-right" height="40" width="30" onclick="GetManipulated_Image('rotateright')" >
+  </a>
+  <a href="#Download" class="w3-bar-item w3-button w3-padding-small w3-black">
+    <input type="image" src="{% static 'webapp/images/download.png' %}" style="width:65%"  alt="download" height="40" width="30" onclick="Saveimage()" >
+  </a>
+</nav>
+
+<!-- Navbar on small screens (Hidden on medium and large screens) -->
+<div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
+  <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small">
+    <a href="#" class="w3-bar-item w3-button" style="width:25% !important">HOME</a>
+    <a href="#about" class="w3-bar-item w3-button" style="width:25% !important">ABOUT</a>
+    <a href="#photos" class="w3-bar-item w3-button" style="width:25% !important">PHOTOS</a>
+    <a href="#contact" class="w3-bar-item w3-button" style="width:25% !important">CONTACT</a>
+  </div>
+</div>
+
+<!-- Page Content -->
+<div class="w3-padding-8" id="main">
+  <!-- Header/Home -->
+  <header class="w3-container w3-padding-8 w3-center w3-black" id="home">
+    <h2 class="w3-jumbo">Photo Editor </h2>
+
+  </header>
+
+  <!--  Section -->
+  <div class="w3-content w3-justify w3-text-grey w3-padding-64 w3-center" id="imgUpload">
+    <form method = "post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+    {% if img_obj %}
+    <div class="w3-content w3-justify w3-text-grey w3-padding-64 w3-center">
+      <img id="imgrtt" src="{{img_obj.image_upload.url}}" alt="Smiley face" width="500" height="300" />
+     <img id="imgthumb" src="" style="Display:none;" width="90" height="90" alt="Thumbnail" />
+    </div>
+    {% endif %}
+  </div>
+
+
+  <!-- End About Section -->
+
+   <div class="w3-content w3-justify w3-text-grey w3-padding-64 w3-center" id="imgEdit">
+
+  </div>
+  <!-- Footer -->
+  <footer class="w3-content w3-padding-64 w3-text-grey w3-xlarge w3-center">
+    <!--<i class="fa fa-facebook-official w3-hover-opacity"></i>
+    <i class="fa fa-instagram w3-hover-opacity"></i>
+    <i class="fa fa-snapchat w3-hover-opacity"></i>
+    <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+    <i class="fa fa-twitter w3-hover-opacity"></i>
+    <i class="fa fa-linkedin w3-hover-opacity"></i> -->
+    <p class="w3-medium">Developed by <a href="#" target="_blank" class="w3-hover-text-green">Poonam Patel</a></p>
+  <!-- End footer -->
+  </footer>
+
+<!-- END PAGE CONTENT -->
+</div>
+
+</body>
+</html>
+<script>
+ function Saveimage()
+ {
+    var a = document.createElement('a');
+    if($('#imgthumb').css('display') == 'block')
+    {
+       a.href = $('#imgthumb').attr('src');
+    }
+    else
+    {
+       a.href = $('#imgrtt').attr('src');
+    }
+    a.download = "favicon.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+</script>
+<script>
+function GetManipulated_Image(optname){
+var img_src = $('#imgrtt').attr('src');
+  $.ajax({
+    url: "/GetManipulated_Image",
+    type: "GET",
+        data: {
+        imgurl: img_src,
+        optname: optname
+    },
+  }).done(function(response) {
+  $('#imgrtt').attr('src','')
+    if(optname =='thumbnail')
+    {
+     $('#imgrtt').attr('src',img_src);
+     $('#imgthumb').attr('src', response.imgpath);
+     $('#imgthumb').attr('style' ,'display:block');
+    }
+    else
+    {
+       $('#imgrtt').attr('src', response.imgpath);
+      $('#imgthumb').attr('style' ,'display:none');
+    }
+  });
+}
+</script>
